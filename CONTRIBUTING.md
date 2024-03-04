@@ -1,4 +1,4 @@
-# Contributing to [Your Project Name]
+# Contributing to Memories
 
 Thank you for your interest in contributing to Memories! We welcome contributions from the community to improve and enhance the project. Please take a moment to review this document for guidelines on how to contribute.
 
