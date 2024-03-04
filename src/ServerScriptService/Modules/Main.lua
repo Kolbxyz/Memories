@@ -8,7 +8,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 local TextService = game:GetService("TextService")
 local BadgeService = game:GetService("BadgeService")
-local MessagingService = game:GetService("MessagingService")
 local HttpService = game:GetService("HttpService")
 local MarketPlaceService = game:GetService("MarketplaceService")
 
@@ -22,18 +21,19 @@ local New = Remotes:WaitForChild("New")
 --\\
 
 ---- Variables ----
-local clientMessages = Rongo.new("data-pehuz", "2ylPbT4TZGX7eA4cDzWmUJR5xxmkWLxvQDB92pMNzSsXU0anWiSJndv05olmJXVj")
-local clientUsers = Rongo.new("data-pehuz", "SglEZVB0HMRhsF4blowDU2acw4k9o7pzWD894NdK2o9KfbImV00esKMsmKEEoBMu")
-local clientFeedbacks = Rongo.new("data-pehuz", "t5O17lpd2lgT5IHWvdzRmaaHvcJ4XZNmk6P4QneBwg9soY3qZZo9SjAEL7SLx3if")
+local CREDENTIALS = require(script.Parent.Credentials)
+local clientMessages = Rongo.new("data-pehuz", CREDENTIALS.CLIENT_MESSAGES)
+local clientUsers = Rongo.new("data-pehuz", CREDENTIALS.CLIENT_USERS)
+--local clientFeedbacks = Rongo.new("data-pehuz", CREDENTIALS.CLIENT_FEEDBACKS)
 
 local ClusterMessages = clientMessages:GetCluster("Cluster0")
 local DatabaseMessages = ClusterMessages:GetDatabase("Memories")
 
-local ClusterUsers = clientMessages:GetCluster("Cluster0")
+local ClusterUsers = clientUsers:GetCluster("Cluster0")
 local DatabaseUsers = ClusterUsers:GetDatabase("Memories")
 
-local ClusterFeedbacks = clientMessages:GetCluster("Cluster0")
-local DatabaseFeedbacks = ClusterFeedbacks:GetDatabase("Memories")
+--local ClusterFeedbacks = clientFeedbacks:GetCluster("Cluster0")
+--local DatabaseFeedbacks = ClusterFeedbacks:GetDatabase("Memories")
 
 local messagesData = DatabaseMessages:GetCollection("messages")
 local usersData = DatabaseUsers:GetCollection("users")
@@ -51,10 +51,8 @@ local DataStore = MongoStore:GetDataStore("Memories","messagesData") --// Update
 ]]
 
 local SERVER = {}
-local MessageWebHook = [[https://media.guilded.gg/webhooks/031cb9c9-51e7-4729-baad-0c67bec30b35/DRQpCHKJTUIsuQOGqkCISsSmsauai4aeo2K0GComMCUs
-ygSqayKyeQ0kusCQiSWwY48Sy0m2k6OyASe4qI0OEi]]
-local FeedbackWebhook = [[https://media.guilded.gg/webhooks/3b3196ef-072d-4f21-a953-ceb11a99ae48/r3pgmi51iCeY2SSgkmU0KaSuEqmA2gmmauEg2mKa4o6
-uok6AkA46KUYi0Eegww2ceussicIAYm68eoCIUgg62a]]
+local MESSAGE_WEBHOOK = CREDENTIALS.MESSAGE_WEBHOOK
+local FEEDBACK_WEBHOOK = CREDENTIALS.FEEDBACK_WEBHOOK
 
 --local DataStore = DataStoreService:GetDataStore("DATA")
 
@@ -323,7 +321,7 @@ function SERVER.edit(Player, Content, title, index, forcePlayer, notifications)
 			}
 		}	
 		GuildedMessage = HttpService:JSONEncode(GuildedMessage)
-		HttpService:PostAsync(MessageWebHook, GuildedMessage)
+		HttpService:PostAsync(MESSAGE_WEBHOOK, GuildedMessage)
 	end)
 	--	warn(CurrentData)
 	if not s and e then warn(e) end
@@ -387,7 +385,7 @@ function SERVER.New(Player, Content, title, notifications)
 				}
 			}
 		}	
-		HttpService:PostAsync(MessageWebHook, HttpService:JSONEncode(GuildedMessage))
+		HttpService:PostAsync(MESSAGE_WEBHOOK, HttpService:JSONEncode(GuildedMessage))
 	end)
 --	warn(CurrentData)
 	if not s and e then warn(e) end
@@ -518,7 +516,7 @@ function SERVER.SendFeedback(Player, Content)
 		}
 	}	
 	GuildedMessage = HttpService:JSONEncode(GuildedMessage)
-	HttpService:PostAsync(FeedbackWebhook, GuildedMessage)
+	HttpService:PostAsync(FEEDBACK_WEBHOOK, GuildedMessage)
 	Remotes.notify:FireClient(Player, "Feedback sent!", "Thank you for your feedback!")
 end
 
@@ -537,7 +535,7 @@ function SERVER.Report(Player, author, content)
 		}
 	}	
 	GuildedMessage = HttpService:JSONEncode(GuildedMessage)
-	HttpService:PostAsync(FeedbackWebhook, GuildedMessage)
+	HttpService:PostAsync(FEEDBACK_WEBHOOK, GuildedMessage)
 	Remotes.notify:FireClient(Player, "Message reported!", "Thanks for reporting this message.")
 end
 --- // Core \\ ---
