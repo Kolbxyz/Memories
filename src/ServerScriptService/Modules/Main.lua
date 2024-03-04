@@ -94,7 +94,7 @@ end
 function SERVER.firstTime(player)
 	local userData = SERVER:getUserData(player)
 	Remotes.firstTime:FireClient(player)
-	userData.hasVisited = true
+	userData.hasVisited = DateTime.now().UnixTimestamp
 	usersData:ReplaceOne({ID=tostring(player.UserId)}, userData, true)
 end
 
@@ -130,7 +130,7 @@ function SERVER:getUserData(player)
 	local result
 	local s,e = pcall(function()
 		---[[CHANGE BELOW TO MODIFY DEFAULT USER DATA]]
-		result = usersData:FindOne({ID=tostring(player)}) or {messagesCount=1;draft={};ID=tostring(player);hasVisited=true;playtime=0}
+		result = usersData:FindOne({ID=tostring(player)}) or {messagesCount=1;draft={};ID=tostring(player);hasVisited=false;playtime=0}
 		result = SERVER.filterTable(result)
 		-- DateTime.now():FormatUniversalTime("MM/YY","en-us")
 	end)
