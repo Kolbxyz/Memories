@@ -37,7 +37,7 @@ local DatabaseFeedbacks = ClusterFeedbacks:GetDatabase("Memories")
 
 local messagesData = DatabaseMessages:GetCollection("messages")
 local usersData = DatabaseUsers:GetCollection("users")
-local feedbacksData = DatabaseFeedbacks:GetCollection("feedbacks")
+--local feedbacksData = DatabaseFeedbacks:GetCollection("feedbacks")
 
 local likeTriggers = {}
 
