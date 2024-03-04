@@ -1,0 +1,1 @@
+pcall(function()game:GetService("StarterGui"):SetCore("ResetButtonCallback", false)end)
