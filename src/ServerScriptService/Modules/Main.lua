@@ -41,15 +41,6 @@ local usersData = DatabaseUsers:GetCollection("users")
 
 local likeTriggers = {}
 
- --// Update this with the location where you placed the MongoStore module
-
---[[MongoStore
-MongoStore:Authorize("data-pehuz", "ezQTad1hF6Tkmakwp03oQrqHm9QrJzGuOdmCduhNINP8kXHsrFn9xKkwoHi9sx4M")
---// Update these with your App ID & API Key (This is required to use MongoStore)
-local DataStore = MongoStore:GetDataStore("Memories","messagesData") --// Update these with your database name & your collection name
---// You can also change the cluster name from the default (Cluster0) by adding an extra argument with your cluster name
-]]
-
 local SERVER = {}
 local MESSAGE_WEBHOOK = CREDENTIALS.MESSAGE_WEBHOOK
 local FEEDBACK_WEBHOOK = CREDENTIALS.FEEDBACK_WEBHOOK
@@ -399,7 +390,7 @@ end
 
 function SERVER.Like(Player, author, dataIndex)
 	if likeTriggers[Player.UserId] then
-		if DateTime.now().UnixTimestamp - likeTriggers[Player.UserId] < 15 then
+		if DateTime.now().UnixTimestamp - likeTriggers[Player.UserId] < 5 then
 			Remotes.notify:FireClient(Player, "Slow down", string.format("Please wait %d seconds before liking messages again.", 15-(DateTime.now().UnixTimestamp-likeTriggers[Player.UserId])))
 			return
 		end
