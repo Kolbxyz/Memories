@@ -22,6 +22,8 @@ local New = Remotes:WaitForChild("New")
 
 ---- Variables ----
 local CREDENTIALS = require(script.Parent.Credentials)
+local MESSAGES_LIMIT = 50
+
 local clientMessages = Rongo.new("data-pehuz", CREDENTIALS.CLIENT_MESSAGES)
 local clientUsers = Rongo.new("data-pehuz", CREDENTIALS.CLIENT_USERS)
 --local clientFeedbacks = Rongo.new("data-pehuz", CREDENTIALS.CLIENT_FEEDBACKS)
@@ -160,9 +162,9 @@ function SERVER.Refresh()
 
 	local count = 0
 
-	-- Display only 30 messages
+	-- Display only {MESSAGES_LIMIT} messages
 	for _, entry in ipairs(flatData) do
-		if count >= 30 then
+		if count >= MESSAGES_LIMIT then
 			break
 		end
 
@@ -175,7 +177,7 @@ function SERVER.Refresh()
 
 		SERVER.renderMessage(v,i,j,w)
 
-		count = count + 1
+		count += 1
 	end
 end
 
