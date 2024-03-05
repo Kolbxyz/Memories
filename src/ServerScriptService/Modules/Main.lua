@@ -184,10 +184,12 @@ end
 function SERVER.renderMessage(v, i, j, w)
 	local Clone = ServerStorage.Parts:WaitForChild("SoulPart"):Clone()
 	Clone.Parent, Clone.Name, Clone.Position = workspace.Clones, Players:GetNameFromUserIdAsync(tonumber(v.ID)) or "Unknown", Vector3.new(w["x"], w["y"], w["z"])
+	
 	Clone.Fire.Color = ColorSequence.new{
 		ColorSequenceKeypoint.new(0, Color3.fromRGB(math.random(1,255),math.random(1,255),math.random(1,255))),
 		ColorSequenceKeypoint.new(1, Color3.fromRGB(math.random(1,255),math.random(1,255),math.random(1,255))),
 	}
+
 	Clone.ProximityPrompt.ActionText = w["title"]
 	Clone.ProximityPrompt.ObjectText = Players:GetNameFromUserIdAsync(v.ID) or "Unknown"
 
@@ -362,6 +364,8 @@ function SERVER.New(Player, Content, title, notifications)
 		playerData = SERVER.filterTable(playerData)
 		table.insert(playerData.data,{["title"]=title;["Content"]=Content;["x"]=x;["y"]=y;["z"]=z;["Timestamp"]=DateTime.now().UnixTimestamp;["Likes"]={};hasNotifications=notifications})
 		
+		SERVER.renderMessage(playerData.data, Content, tostring(Player.UserId), #playerData.data)
+
 		SERVER.saveDraft(Player, {content='',title=''})
 		
 		messagesData:ReplaceOne({["ID"]=tostring(Player.UserId)},playerData,true)
@@ -387,7 +391,7 @@ function SERVER.New(Player, Content, title, notifications)
 	SERVER.getUserData()
 	
 	Remotes.notify:FireClient(Player, "Message sent!", "Your message has been sent! Check your profile to read it!")
-	SERVER.Refresh()
+--	SERVER.Refresh()
 end
 
 function SERVER.Like(Player, author, dataIndex)
@@ -467,7 +471,7 @@ function SERVER.Like(Player, author, dataIndex)
 		table.remove(playerData.data[dataIndex]["Likes"], table.find(playerData.data[dataIndex]["Likes"], Player.Name))
 		playerData = SERVER.filterTable(playerData)
 		messagesData:ReplaceOne({["ID"]=tostring(author)}, playerData)
-		Remotes.notify:FireClient(Player, "Message removed from your favourites!", "This message has been removed from your favourites.")
+		Remotes.notify:FireClient(Player, "Message removed !", "This message has been removed from your favourites.")
 	end
 	task.wait(15)
 	likeTriggers[Player.UserId] = nil
@@ -479,7 +483,6 @@ function SERVER.GetLiked(Player, userId)
 	local Data = SERVER.GetData() or {}
 	local Favorites = {}
 	for index, Content in pairs(Data) do
---		warn(Content)
 		for mIndex, message in pairs(Content.data) do
 			if not message["Likes"] then continue end
 			if table.find(message["Likes"], playerName) then

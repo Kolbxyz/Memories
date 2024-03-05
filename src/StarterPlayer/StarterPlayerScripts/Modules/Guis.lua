@@ -527,7 +527,6 @@ function _Guis.RefreshLiked()
 				Clone:FindFirstChild("teleport").MouseButton1Click:Connect(function()
 					favoritesFrame.Visible = false; Lighting.UIBlur.Enabled = false
 					character:MoveTo(Vector3.new(value.x, value.y, value.z))
---					print(index)
 					_Guis.ReadContent(value, data.ID, FullData, index2)
 				end)
 			end)
@@ -595,9 +594,6 @@ function _Guis.ManageAnimations(child)
 			end
 			
 			workspace.Sounds.Hover:Play()
---[[			if child:FindFirstChild("Blur") then
-				tweenService:Create(child:FindFirstChild("Blur"), TweenInfo.new(.5), {ImageTransparency=0}):Play()
-			end]]
 			local uiCorner = child:FindFirstChildWhichIsA("UICorner")
 			if uiCorner then
 				if not cornerRadius then
