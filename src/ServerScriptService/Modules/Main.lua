@@ -169,8 +169,8 @@ function SERVER.Refresh()
 		end
 
 		local v = entry.v -- all messages of the user
-		local w = entry.w -- message content
-		local i = entry.index -- user ID
+		local w = entry.w -- message data
+		local i = entry.index -- user ID (not userId)
 		local j = entry.subIndex -- message ID
 
 		task.wait(.5)
@@ -217,7 +217,6 @@ function SERVER.Filter(Player, String)
 --	print(TextService:FilterStringAsync(String, Player.UserId))
 	return TextService:FilterStringAsync(String, Player.UserId):GetChatForUserAsync(Player.UserId) or "Error when filtering!"
 end
-
 
 --[[Change settings
 function SERVER.updateSetting(player, settingName, value)
@@ -340,32 +339,30 @@ function SERVER.New(Player, Content, title, notifications)
 	--	print(userData["messagesCount"], #CurrentData[tostring(Player.UserId)]) --DEBUG
 	--	pcall(function()warn(CurrentData[tostring(Player.UserId)] and userData["messagesCount"] >= #CurrentData[tostring(Player.UserId)])end)
 	local playerData = {ID=tostring(Player.UserId);data={}}
+	local playerIndex = 1
 	for i,v in pairs(CurrentData) do
 		if v.ID == tostring(Player.UserId) then
 			playerData = v
+			playerIndex = i
 		end
 	end
---	warn(userData.messagesCount)
+
 	if playerData and userData["messagesCount"] <= #playerData.data then
 		Remotes.notify:FireClient(Player, "Cannot send!", "You can't send more message!")
 		MarketPlaceService:PromptProductPurchase(Player, 1342051457)
 		return
 	end
 	
+	local formattedMessageData = {["title"]=title;["Content"]=Content;["x"]=x;["y"]=y;["z"]=z;["Timestamp"]=DateTime.now().UnixTimestamp;["Likes"]={};hasNotifications=notifications}
 	local s, e = pcall(function()
 		if not MarketPlaceService:UserOwnsGamePassAsync(Player.UserId, 74708875) and #Content > 500 then warn("Message must be shorter than 500 characters!") return end
 		
 		Content = SERVER.Filter(Player, Content)
-
---		if not CurrentData then
---			CurrentData[tostring(Player.UserId)] = {}
---		end
 		
 		playerData = SERVER.filterTable(playerData)
-		table.insert(playerData.data,{["title"]=title;["Content"]=Content;["x"]=x;["y"]=y;["z"]=z;["Timestamp"]=DateTime.now().UnixTimestamp;["Likes"]={};hasNotifications=notifications})
-		
-		SERVER.renderMessage(playerData.data, Content, tostring(Player.UserId), #playerData.data)
 
+		table.insert(playerData.data, formattedMessageData)
+		
 		SERVER.saveDraft(Player, {content='',title=''})
 		
 		messagesData:ReplaceOne({["ID"]=tostring(Player.UserId)},playerData,true)
@@ -384,14 +381,15 @@ function SERVER.New(Player, Content, title, notifications)
 		}	
 		HttpService:PostAsync(MESSAGE_WEBHOOK, HttpService:JSONEncode(GuildedMessage))
 	end)
---	warn(CurrentData)
+
 	if not s and e then warn(e) end
 	BadgeService:AwardBadge(Player.UserId, 2143077577)
 	
-	SERVER.getUserData()
+--	SERVER.getUserData()
 	
 	Remotes.notify:FireClient(Player, "Message sent!", "Your message has been sent! Check your profile to read it!")
---	SERVER.Refresh()
+	
+	SERVER.renderMessage(playerData, playerIndex, #playerData.data, formattedMessageData)
 end
 
 function SERVER.Like(Player, author, dataIndex)

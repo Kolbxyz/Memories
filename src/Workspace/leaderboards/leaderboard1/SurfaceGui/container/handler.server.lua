@@ -69,15 +69,18 @@ function Refresh()
 			Clone.Name = User.Username
 			Clone.Parent = Container
 		end
-		Clone.value.Text = User.Count
-		Clone.name.Text = User.Username
-		Clone.image.Image = Players:GetUserThumbnailAsync(
-			Players:GetUserIdFromNameAsync(User.Username),
-			Enum.ThumbnailType.HeadShot,
-			Enum.ThumbnailSize.Size420x420)
-		Clone.LayoutOrder = i
-		Clone.Visible = true
-		Clone.rank.Text = string.format("#%d", i)
+		local success, message = pcall(function()
+			Clone.value.Text = User.Count
+			Clone.name.Text = User.Username
+			Clone.image.Image = Players:GetUserThumbnailAsync(
+				Players:GetUserIdFromNameAsync(User.Username),
+				Enum.ThumbnailType.HeadShot,
+				Enum.ThumbnailSize.Size420x420)
+			Clone.LayoutOrder = i
+			Clone.Visible = true
+			Clone.rank.Text = string.format("#%d", i)
+		end)
+		if not success then warn(message) end
 		if i == 1 then
 			Clone.rank.TextColor3 = Color3.new(1, 1, 0)
 		elseif i == 2 then
