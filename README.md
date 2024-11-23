@@ -1,3 +1,5 @@
+# Outdated
+
 Game link: https://www.roblox.com/games/10604519899/Memories
 
 🔥 Share a Flame with a Message for All to Read!
